@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Solid fallback matching AppGradients.splash's darkest stop
+     (#120E2A) so the native launch screen blends into the Dart
+     splash screen with no visible flash. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/launch_background"/>
+</layer-list>

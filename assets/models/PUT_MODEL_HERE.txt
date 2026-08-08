@@ -1,0 +1,12 @@
+Put the Real-ESRGAN ONNX model file in this folder, named:
+
+    realesrgan_x4.onnx
+
+See the "AI Model Setup" section of the project README.md for exactly
+where to obtain a real, free, open-source Real-ESRGAN ONNX export and
+how to confirm its input/output tensor names match
+`lib/core/constants/app_constants.dart`.
+
+This repository does not ship the model file itself (it is a multi-
+megabyte binary weight file); the app will throw a clear error at
+runtime ("Real-ESRGAN model asset not found…") until you add it here.

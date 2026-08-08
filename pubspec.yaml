@@ -1,0 +1,60 @@
+name: pixup_ai
+description: "PixUp AI - Premium AI powered photo & video enhancer."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  provider: ^6.1.2
+
+  # UI / Fonts
+  google_fonts: ^6.2.1
+
+  # Media picking & preview
+  image_picker: ^1.1.2
+  video_player: ^2.9.2
+
+  # Save & share
+  gal: ^2.3.0
+  share_plus: ^10.0.0
+  path_provider: ^2.1.4
+
+  # Persistence
+  shared_preferences: ^2.3.2
+
+  # Utilities
+  uuid: ^4.4.2
+  url_launcher: ^6.3.0
+  intl: ^0.19.0
+  path: ^1.9.0
+
+  # --- Real, on-device AI enhancement engine ---
+  # Runs the actual Real-ESRGAN neural network on-device via ONNX Runtime
+  # (fully offline, no cloud calls). See lib/data/services/real_esrgan_engine.dart
+  onnxruntime: ^1.4.1
+  # Pure-Dart image decode/encode/resize/tiling used to feed the network
+  # and reassemble the upscaled output.
+  image: ^4.2.0
+
+  # --- Real video enhancement engine ---
+  # Maintained fork of FFmpegKit (the original project was retired in 2025).
+  # Runs real FFmpeg filters (denoise, sharpen, upscale) on-device.
+  ffmpeg_kit_flutter_new: ^4.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    # Place the Real-ESRGAN ONNX model file here (see README.md → "AI Model
+    # Setup"). Required for the photo enhancer to run real inference.
+    - assets/models/
