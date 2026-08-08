@@ -35,7 +35,7 @@ class AppConstants {
   // These MUST match the tensor names baked into whatever ONNX file you
   // bundle (open the .onnx in https://netron.app to confirm). Defaults
   // below match the most common community Real-ESRGAN → ONNX exports.
-  static const String realEsrganInputName = 'input';
+  static const String realEsrganInputName = 'input.1';
   static const String realEsrganOutputName = 'output';
 
   // Native upscale factor of the bundled model (Real-ESRGAN is typically
