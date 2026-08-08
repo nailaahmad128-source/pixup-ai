@@ -56,7 +56,6 @@ flutter:
   assets:
     - assets/models/ESRGAN.tflite
   uses-material-design: true
-  assets:
     # Place the Real-ESRGAN ONNX model file here (see README.md → "AI Model
     # Setup"). Required for the photo enhancer to run real inference.
     - assets/models/
