@@ -317,8 +317,6 @@ class RealESRGANEngine {
   int _toByte(dynamic value) {
     final v = (value as num).toDouble();
 
-    return v
-        .clamp(0.0, 255.0)
-        .round();
+    return v.clamp(0.0, 255.0).round();
   }
 }

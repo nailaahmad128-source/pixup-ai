@@ -38,7 +38,6 @@ dependencies:
   # --- Real, on-device AI enhancement engine ---
   # Runs the actual Real-ESRGAN neural network on-device via ONNX Runtime
   # (fully offline, no cloud calls). See lib/data/services/real_esrgan_engine.dart
-  onnxruntime: ^1.4.1
   # Pure-Dart image decode/encode/resize/tiling used to feed the network
   # and reassemble the upscaled output.
   image: ^4.2.0

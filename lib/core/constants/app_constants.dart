@@ -30,7 +30,7 @@ class AppConstants {
   // open-source Real-ESRGAN ONNX export and place it here — see
   // README.md → "AI Model Setup". The app performs real neural
   // super-resolution inference; nothing here is simulated.
-  static const String realEsrganModelAsset = 'assets/models/realesrgan_x4.onnx';
+  static const String realEsrganModelAsset = 'assets/models/ESRGAN.tflite';
 
   // These MUST match the tensor names baked into whatever ONNX file you
   // bundle (open the .onnx in https://netron.app to confirm). Defaults
