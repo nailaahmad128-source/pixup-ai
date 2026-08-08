@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:image/image.dart' as img;
 import 'package:onnxruntime/onnxruntime.dart';
@@ -38,6 +39,11 @@ class RealESRGANEngine {
         bytes,
         sessionOptions,
       );
+
+      print('REAL-ESRGAN INPUT NAMES: ${_session!.inputNames}');
+      print('REAL-ESRGAN OUTPUT NAMES: ${_session!.outputNames}');
+      print('REAL-ESRGAN INPUT COUNT: ${_session!.inputCount}');
+      print('REAL-ESRGAN OUTPUT COUNT: ${_session!.outputCount}');
     } catch (e) {
       _loadFuture = null;
 
@@ -126,7 +132,7 @@ class RealESRGANEngine {
   }) async {
     await _ensureLoaded();
 
-    const tileSize = 256;
+    final tileSize = AppConstants.realEsrganTileSize;
     const scale = 4;
 
     final tilesX =
@@ -214,36 +220,47 @@ class RealESRGANEngine {
   ) async {
     final session = _session!;
 
-    final inputData =
-        List.generate(1, (_) {
-      return List.generate(
-        tile.height,
-        (y) {
-          return List.generate(
-            tile.width,
-            (x) {
-              final pixel =
-                  tile.getPixel(x, y);
+    final height = tile.height;
+    final width = tile.width;
 
-              return <int>[
-                pixel.r.toInt(),
-                pixel.g.toInt(),
-                pixel.b.toInt(),
-              ];
-            },
-          );
-        },
-      );
-    });
+    // Real-ESRGAN expects Float32 NCHW input:
+    // [1, 3, height, width]
+    final red = List.generate(
+      height,
+      (y) => List.generate(
+        width,
+        (x) => tile.getPixel(x, y).r.toDouble() / 255.0,
+      ),
+    );
+
+    final green = List.generate(
+      height,
+      (y) => List.generate(
+        width,
+        (x) => tile.getPixel(x, y).g.toDouble() / 255.0,
+      ),
+    );
+
+    final blue = List.generate(
+      height,
+      (y) => List.generate(
+        width,
+        (x) => tile.getPixel(x, y).b.toDouble() / 255.0,
+      ),
+    );
+
+    final data = [
+      [red, green, blue],
+    ];
 
     final inputTensor =
         OrtValueTensor.createTensorWithDataList(
-      inputData,
+      data,
       [
         1,
-        tile.height,
-        tile.width,
         3,
+        height,
+        width,
       ],
     );
 
@@ -290,11 +307,17 @@ class RealESRGANEngine {
   img.Image _outputToImage(
     List nested,
   ) {
+    // Real-ESRGAN output:
+    // [1, 3, height, width]
+
     final batch = nested[0] as List;
 
-    final height = batch.length;
-    final width =
-        (batch[0] as List).length;
+    final red = batch[0] as List;
+    final green = batch[1] as List;
+    final blue = batch[2] as List;
+
+    final height = red.length;
+    final width = (red[0] as List).length;
 
     final result = img.Image(
       width: width,
@@ -302,22 +325,14 @@ class RealESRGANEngine {
     );
 
     for (var y = 0; y < height; y++) {
-      final row = batch[y] as List;
+      final redRow = red[y] as List;
+      final greenRow = green[y] as List;
+      final blueRow = blue[y] as List;
 
       for (var x = 0; x < width; x++) {
-        final pixel = row[x] as List;
-
-        final r = _toByte(
-          pixel[0] as num,
-        );
-
-        final g = _toByte(
-          pixel[1] as num,
-        );
-
-        final b = _toByte(
-          pixel[2] as num,
-        );
+        final r = _toByte(redRow[x] as num);
+        final g = _toByte(greenRow[x] as num);
+        final b = _toByte(blueRow[x] as num);
 
         result.setPixelRgb(
           x,
@@ -331,6 +346,7 @@ class RealESRGANEngine {
 
     return result;
   }
+
 
   int _toByte(num value) {
     return (value
