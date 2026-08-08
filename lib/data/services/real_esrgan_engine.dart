@@ -220,38 +220,35 @@ class RealESRGANEngine {
   ) async {
     final session = _session!;
 
-    final height = tile.height;
-    final width = tile.width;
+    // Real-ESRGAN: NCHW Float32, normalized 0..1
+    final total = 1 * 3 * tile.height * tile.width;
+    final data = Float32List(total);
 
-    // Real-ESRGAN expects Float32 NCHW input:
-    // [1, 3, height, width]
-    final red = List.generate(
-      height,
-      (y) => List.generate(
-        width,
-        (x) => tile.getPixel(x, y).r.toDouble() / 255.0,
-      ),
-    );
+    var index = 0;
 
-    final green = List.generate(
-      height,
-      (y) => List.generate(
-        width,
-        (x) => tile.getPixel(x, y).g.toDouble() / 255.0,
-      ),
-    );
+    // R channel
+    for (var y = 0; y < tile.height; y++) {
+      for (var x = 0; x < tile.width; x++) {
+        final pixel = tile.getPixel(x, y);
+        data[index++] = pixel.r.toDouble() / 255.0;
+      }
+    }
 
-    final blue = List.generate(
-      height,
-      (y) => List.generate(
-        width,
-        (x) => tile.getPixel(x, y).b.toDouble() / 255.0,
-      ),
-    );
+    // G channel
+    for (var y = 0; y < tile.height; y++) {
+      for (var x = 0; x < tile.width; x++) {
+        final pixel = tile.getPixel(x, y);
+        data[index++] = pixel.g.toDouble() / 255.0;
+      }
+    }
 
-    final data = [
-      [red, green, blue],
-    ];
+    // B channel
+    for (var y = 0; y < tile.height; y++) {
+      for (var x = 0; x < tile.width; x++) {
+        final pixel = tile.getPixel(x, y);
+        data[index++] = pixel.b.toDouble() / 255.0;
+      }
+    }
 
     final inputTensor =
         OrtValueTensor.createTensorWithDataList(
@@ -259,8 +256,8 @@ class RealESRGANEngine {
       [
         1,
         3,
-        height,
-        width,
+        tile.height,
+        tile.width,
       ],
     );
 
